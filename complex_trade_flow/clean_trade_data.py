@@ -1,34 +1,70 @@
-import pandas as pd
 import os
 
+from pathlib import Path
+
+import pandas as pd
 from pandas import DataFrame
-from dotenv import load_dotenv
 
 from .constants import BACIColumnsTradeData, CountryCodes, WBDGDPDeflator
 
-load_dotenv() # TODO: change dotenv
+try:
+    from dotenv import load_dotenv
+except ImportError:  # python-dotenv es opcional: pip install "complex-trade-flow[clean]"
+    def load_dotenv(*_args, **_kwargs) -> bool:
+        """Sin python-dotenv las variables se leen solo del entorno real."""
+        return False
+
+load_dotenv()
+
+
+def required_path(variable: str) -> Path:
+    """
+    Lee una ruta desde el entorno y falla con un mensaje accionable si falta.
+
+    Antes estas variables se concatenaban con `+`, de modo que una variable sin
+    definir producía `TypeError: unsupported operand type(s) for +: 'NoneType'
+    and 'str'`, que no le dice nada a quien lo sufre.
+
+    Args:
+        variable (str): Nombre de la variable de entorno.
+
+    Returns:
+        Path: La ruta configurada.
+
+    Raises:
+        RuntimeError: Si la variable no está definida.
+    """
+    value = os.getenv(variable)
+    if not value:
+        raise RuntimeError(
+            f"Falta la variable de entorno {variable}. Copia `.env.example` a "
+            f"`.env` y ajusta las rutas. Para probar la librería sin datos "
+            f"reales usa `complex_trade_flow.samples.load_sample_network()`."
+        )
+    return Path(value)
 
 
 class RawDataManager:
     def __init__(self, year):
 
         self.year = year
+        raw_data_dir = required_path("RAW_DATA_DIR")
 
         self.transaction_data = pd.read_csv(
-            os.getenv("RAW_DATA_DIR") + f"BACI_HS92_Y{year}_V202401b.csv",
+            raw_data_dir / f"BACI_HS92_Y{year}_V202401b.csv",
             sep=","
         )
 
         self.country_data = pd.read_csv(
-            os.getenv("RAW_DATA_DIR") + "country_codes_V202401b.csv"
+            raw_data_dir / "country_codes_V202401b.csv"
         )
 
         # Countries location region
-        self.wbd_countries = pd.read_csv(os.getenv("WBD_COUNTRIES"))
+        self.wbd_countries = pd.read_csv(required_path("WBD_COUNTRIES"))
 
         # GDP deflator: linked series (base year varies by country), use dtype="string" to avoid unicodeerror
         self.gdp_deflator = pd.read_csv(
-            os.getenv("WBD_GDP_DEFLATOR"),
+            required_path("WBD_GDP_DEFLATOR"),
             dtype="string"
         )
 
@@ -130,6 +166,8 @@ class DataCleaner:
         TODO: use Parallel to optimize time execution
         """
         years = [str(year) for year in range(1995, 2022 + 1)]
+        output_dir = required_path("CLEANED_DATA_DIR")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
         for year in years:
             print("Processing year = ", year)
@@ -144,7 +182,7 @@ class DataCleaner:
             data_corrected = gpd_handler.to_constant_usd(cleaned_data, year)
 
             data_corrected.to_csv(
-                os.getenv("cleaned_data_dir") + f"cleaned_HS92_Y{year}_V202401b.csv",
+                output_dir / f"cleaned_HS92_Y{year}_V202401b.csv",
                 index=False
             )
 

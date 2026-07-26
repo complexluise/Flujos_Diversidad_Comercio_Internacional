@@ -3,6 +3,13 @@
 Evaluación del estado de `complex_trade_flow` desde la perspectiva de **alguien que
 no eres tú**: qué encuentra, qué puede correr, y por qué hoy no lo usa nadie.
 
+> **Estado de la evaluación.** Los pasos 1 a 3 de la sección 6 ya se
+> implementaron: el paquete es instalable, trae un dataset de ejemplo y hay CI
+> con tests. Los diagnósticos de las secciones 3.1 a 3.7 quedaron resueltos
+> salvo el 3.3 (centro-periferia sigue en `sandbox/`, ver paso 5). El texto de
+> esas secciones se conserva tal cual porque documenta el punto de partida y
+> explica por qué existen ciertos tests de regresión.
+
 Todo lo que se afirma abajo como "verificado" se comprobó ejecutando el código en un
 entorno limpio (Python 3.11, dependencias instaladas desde cero, datos sintéticos con
 la forma de BACI ya limpio). No es lectura de código: es ejecución.

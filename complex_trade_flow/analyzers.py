@@ -6,14 +6,13 @@ import pandas as pd
 
 from collections.abc import Callable
 from pandas import DataFrame
-from scipy.stats import stats
 from tqdm import tqdm
 from joblib import Parallel, delayed
 
 from .constants import EconomicComplexity, BACIColumnsTradeData
 from .diversity_metrics import DiversityCalculator
 from .utils import ClassificationScheme
-from complex_trade_flow import TradeNetwork
+from .networks import TradeNetwork
 
 
 class EconomicDiversityAnalyzer:
@@ -180,10 +179,13 @@ class EconomicDiversityAnalyzer:
                 ),
                 column="mass",
             ),
-            # Calculate center/periphery level (simplified version)
-            # A higher ratio of exports to imports indicates a more central position
-            # This is a simplified metric and could be replaced with a more sophisticated calculation
-            # based on the CentralPeripheryStructureFinder class if needed
-            "CENTER_PERIPHERY_LEVEL": money_gain_exportation / money_loss_importation if money_loss_importation > 0 else float(
-            'inf'),
+            # OJO: esto NO es una medida de centro-periferia, es solo el ratio
+            # exportaciones/importaciones. El nombre se conserva por
+            # compatibilidad. La implementación real de la metodología de
+            # Cajas (2025) está en sandbox/centro_periferia_refactor.py y aún
+            # no se ha integrado al paquete.
+            "EXPORT_IMPORT_RATIO": (
+                money_gain_exportation / money_loss_importation
+                if money_loss_importation > 0 else float("inf")
+            ),
         }

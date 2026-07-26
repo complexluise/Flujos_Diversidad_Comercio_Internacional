@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "complex-trade-flow"
+version = "0.1.0"
+description = "Diversidad efectiva de productos en la red de comercio internacional, con agregación flexible de países"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [{ name = "Luis Higuera", email = "luis@sostaina.com" }]
+keywords = [
+    "trade", "economic-complexity", "diversity", "shannon-entropy",
+    "hill-numbers", "baci", "cepii", "international-trade",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Information Analysis",
+    "Natural Language :: Spanish",
+]
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "tqdm>=4.65",
+    "joblib>=1.3",
+]
+
+[project.optional-dependencies]
+app = ["streamlit>=1.30", "plotly>=5.18"]
+clean = ["python-dotenv>=1.0"]
+dev = ["pytest>=8.0", "python-dotenv>=1.0"]
+
+[project.urls]
+Homepage = "https://github.com/complexluise/complex_trade_flow"
+Repository = "https://github.com/complexluise/complex_trade_flow"
+Issues = "https://github.com/complexluise/complex_trade_flow/issues"
+
+[project.scripts]
+complex-trade-flow-demo = "complex_trade_flow.demo:main"
+
+[tool.setuptools.packages.find]
+include = ["complex_trade_flow*"]
+
+[tool.setuptools.package-data]
+complex_trade_flow = ["sample_data/*.csv", "sample_data/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
