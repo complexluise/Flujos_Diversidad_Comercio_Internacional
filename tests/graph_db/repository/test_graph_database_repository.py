@@ -1,6 +1,12 @@
 import pytest
 from unittest.mock import Mock, patch
-from py2neo import Graph, Node, Relationship
+
+# `graph_db` es un subsistema inconcluso (`upload_trade_data` es `pass`) y estos
+# tests dependen de py2neo, que está descontinuado y no es dependencia del
+# paquete. Se saltan en vez de romper CI, hasta decidir si el subsistema se
+# retoma o se archiva. Ver docs/EVALUACION.md, sección 5.
+py2neo = pytest.importorskip("py2neo", reason="py2neo no es dependencia del paquete")
+Graph, Node, Relationship = py2neo.Graph, py2neo.Node, py2neo.Relationship
 
 from graph_db.repository.graph_database_repository import GraphDatabaseRepository
 

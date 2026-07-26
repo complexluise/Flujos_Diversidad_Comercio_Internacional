@@ -20,7 +20,14 @@ ruta_datos = "data/processed_data/BACI_HS92_V202401b/"
 
 @st.cache_data
 def load_data_diversity_countries() -> pd.DataFrame:
-    return pd.read_csv(f"{ruta_datos}countries_diversity.csv").drop(columns="Unnamed: 0")
+    df = pd.read_csv(f"{ruta_datos}countries_diversity.csv").drop(columns="Unnamed: 0")
+    # `is_latinoamerica` viene como booleano, pero la paleta se define con
+    # etiquetas de texto. Sin esta conversión el color_discrete_map no coincide
+    # con ningún valor y Plotly ignora la paleta por completo.
+    df["is_latinoamerica"] = df["is_latinoamerica"].map(
+        {True: "Latinoamérica", False: "No Latinoamérica"}
+    )
+    return df
 
 
 @st.cache_data
